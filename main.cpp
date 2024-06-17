@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+#include <bitset>
 #include "IOcontroller/IOController.h"
 #include "IOcontroller/PcIOController.h"
 
@@ -10,18 +12,23 @@ int main() {
     Settings settings;
     InPut input;
 
+    Game *game = new BombMode(settings);
+    auto *game_as_bm = dynamic_cast<BombMode *>(game);
 
+//    while(true){
+//        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+//        game->update();
+//    }
 
+    for (int i = 0; i < 30; i++) {
+        game_as_bm->gen_hot_plates();
+        std::bitset<8> x(game_as_bm->hotplates);
+        std::cout << "hot plates: " << x << std::endl;
+        int nr = game_as_bm->count_hot_plates();
+        std::cout << "count: " << nr << std::endl;
+    }
+    std::cout << "nr o hotplates: " << game_as_bm->count_hot_plates() << std::endl;
 
-//    ioController.cout_line1("this is supposed to be on line 1");
-//    ioController.cout_line2("select gamemode >");
-//
-//    ioController.cin();
-
-//    std::cout << "select a gamemode" << std::endl;
-//    std::getline(std::cin, selection);
-//
-//    std::cout << selection;
-
+    delete game;
     return 0;
 }

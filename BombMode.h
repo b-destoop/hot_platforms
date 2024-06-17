@@ -5,10 +5,11 @@
 #ifndef HOT_PLATFORMS_BOMBMODE_H
 #define HOT_PLATFORMS_BOMBMODE_H
 
+#include <cstdint>
+#include "game.h"
 
-
-class BombMode {
-    enum BMGameState{
+class BombMode : public Game {
+    enum BMGameState {
         init,
         auto_generate_hot_plates,
         user_input_add_hot_plates,
@@ -25,8 +26,13 @@ private:
 
 
 public:
-    int toggle_state();
+    uint8_t hotplates = 0b0;
 
+    explicit BombMode(Settings &settings) : Game(settings) {}
+
+    int update() override;
+    int count_hot_plates();
+    void gen_hot_plates();
 
 };
 
