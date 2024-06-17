@@ -17,8 +17,9 @@ add_executable(hot_platforms main.cpp
         IOcontroller/PcIOController.h
         BombMode.cpp
         BombMode.h
-        Settings.cpp
-        Settings.h
+        settings.cpp
+        settings.h
+        game.h
 )
 
 # Link the ncurses library
