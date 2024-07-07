@@ -106,6 +106,7 @@ bool BombMode::init_to_user_input_add_hot_plates() {
 }
 
 bool BombMode::auto_gen_hotpl_to_game_ready() {
+    // todo: make this ESP32 compliant
     std::cout << "ready auto generating? (type 'ready')" << std::endl;
     std::string x;
     std::cin >> x;
