@@ -17,9 +17,11 @@ add_executable(hot_platforms main.cpp
         IOcontroller/PcIOController.h
         BombMode.cpp
         BombMode.h
-        settings.cpp
         settings.h
-        game.h
+        FSM_classes/FSM.h
+        FSM_classes/State.h
+        TStateTypes.h
+        FSM_classes/State.cpp
 )
 
 # Link the ncurses library

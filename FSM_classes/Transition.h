@@ -5,6 +5,9 @@
 #ifndef FSM_OOP_TRANSITION_H
 #define FSM_OOP_TRANSITION_H
 
+#include <functional>
+#include <utility>
+
 class State;
 
 class FSM;
@@ -14,15 +17,20 @@ private:
     State *from, *to;
     FSM *fsm;
 
-    bool (FSM::*condition)();
+    std::function<bool()> switch_condition;
 
 public:
-    Transition(State *from, State *to, FSM *fsm, bool(FSM::*condition)()) : from(from), to(to), fsm(fsm),
-                                                                            condition(condition) {};
+    Transition(State *from, State *to, FSM *fsm, std::function<bool()> condition) : from(from), to(to), fsm(fsm),
+                                                                                    switch_condition(
+                                                                                            std::move(condition)) {}
 
+    /**
+     * Get the state to transition to
+     * @return the state to transition to
+     */
     State *get_to_state() { return to; };
 
-    bool check_condition() { return (*fsm.*condition)(); }; // perform the condition() method from the fsm object
+    bool check_condition() { return switch_condition(); }; // perform the condition() method from the fsm object
 };
 
 

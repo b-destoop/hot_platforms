@@ -7,60 +7,7 @@
 
 #define DEBUG(MSG) std::cout << "BM - " << MSG << std::endl;
 
-int BombMode::update() {
-    BMGameState next_state = init;
-    switch (this->state) {
-        case init:
-            DEBUG("current state init")
-            // inputs
-            if (this->settings.auto_gen_hotplate) {
-                next_state = auto_generate_hot_plates;
-            } else {
-                next_state = user_input_add_hot_plates;
-            }
-            // outputs
-            break;
-        case auto_generate_hot_plates:
-            DEBUG("current state autogen hotplates")
-            // inputs
-            // outputs
-            gen_hot_plates();
-            next_state = game_ready;
-            break;
-        case user_input_add_hot_plates:
-            DEBUG("current state user input hot plates")
-            // inputs
-
-            // outputs
-
-            // todo
-            // if latest input = platform nr x
-            // add platform to hot plates
-            // if latest intput = activate
-            // next state
-            break;
-        case game_ready:
-            DEBUG("current state game ready")
-            // inputs
-
-            // outputs
-            break;
-        case player_plate_down:
-            break;
-        case play_positive_tritone:
-            break;
-        case game_over:
-            break;
-        case game_over_wait_user_input:
-            break;
-        case servo_aim:
-            break;
-        case servo_fire:
-            break;
-    }
-    this->state = next_state;
-}
-
+// ------------------ HELPER FUNCTIONS ------------------
 /**
  * Algorithm can be found here
  * https://www.geeksforgeeks.org/count-set-bits-in-an-integer/
@@ -86,7 +33,7 @@ int BombMode::count_hot_plates() {
  */
 void BombMode::gen_hot_plates() {
     uint8_t new_hp = 0;
-    while (count_bits(new_hp) != this->settings.auto_gen_amount) {
+    while (count_bits(new_hp) != this->settings->auto_gen_amount) {
         // shift the number until the last bit is not 1
         while (new_hp & 1)
             new_hp <<= 1;
@@ -100,4 +47,68 @@ void BombMode::gen_hot_plates() {
     this->hotplates = new_hp;
 }
 
+// ------------------ CONSTR/DESTR ------------------
+BombMode::BombMode(Settings *settings) : settings(settings) {
+    auto *init
+            = new State(TState::init, this);
+    auto auto_gen_hotpl
+            = new State(TState::auto_generate_hot_plates, this);
+    auto user_input_add_hot_plates
+            = new State(TState::user_input_add_hot_plates, this);
+    auto game_ready
+            = new State(TState::game_ready, this);
+    auto player_plate_down
+            = new State(TState::player_plate_down, this);
+    auto play_pos_trt
+            = new State(TState::play_positive_tritone, this);
+    auto game_over
+            = new State(TState::game_over, this);
+    auto game_over_wait_user_input
+            = new State(TState::game_over_wait_user_input, this);
+    auto servo_aim
+            = new State(TState::servo_aim, this);
+    auto servo_fire
+            = new State(TState::servo_fire, this);
+
+    init->addTransition(auto_gen_hotpl, [this] { return this->init_to_auto_gen_hotpl(); });
+    init->addTransition(user_input_add_hot_plates, [this] { return this->init_to_user_input_add_hot_plates(); });
+
+    auto_gen_hotpl->addTransition(game_ready, [this] { return this->auto_gen_hotpl_to_game_ready(); });
+
+
+    states.push_back(init);
+    states.push_back(auto_gen_hotpl);
+    states.push_back(user_input_add_hot_plates);
+    states.push_back(game_ready);
+    states.push_back(player_plate_down);
+    states.push_back(play_pos_trt);
+    states.push_back(game_over);
+    states.push_back(game_over_wait_user_input);
+    states.push_back(servo_aim);
+    states.push_back(servo_fire);
+
+    currState = init;
+}
+
+BombMode::~BombMode() {
+    for (State *state: states) {
+        delete state;
+    }
+}
+
+// SWITCH CONDITIONS
+bool BombMode::init_to_auto_gen_hotpl() {
+    return settings->auto_gen_hotplate;
+}
+
+bool BombMode::init_to_user_input_add_hot_plates() {
+    return !settings->auto_gen_hotplate;
+}
+
+bool BombMode::auto_gen_hotpl_to_game_ready() {
+    std::cout << "ready auto generating? (type 'ready')" << std::endl;
+    std::string x;
+    std::cin >> x;
+    return x == "ready";
+}
 

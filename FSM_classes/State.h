@@ -21,7 +21,7 @@ private:
 public:
     explicit State(TState state, FSM *fsm) : fsm(fsm), state(state) {}
 
-    void addTransition(State *destination, bool(FSM::*condition)()); // from, to, condition, fsm
+    void addTransition(State *destination, std::function<bool()> condition);
 
     TState getState() { return state; };
 

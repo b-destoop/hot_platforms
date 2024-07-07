@@ -12,22 +12,17 @@ int main() {
     Settings settings;
     InPut input;
 
-    Game *game = new BombMode(settings);
-    auto *game_as_bm = dynamic_cast<BombMode *>(game);
+    BombMode *game = new BombMode(&settings);
 
-//    while(true){
-//        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-//        game->update();
-//    }
+    // manipulate settings
+//    settings.auto_gen_hotplate = false;
 
-    for (int i = 0; i < 30; i++) {
-        game_as_bm->gen_hot_plates();
-        std::bitset<8> x(game_as_bm->hotplates);
-        std::cout << "hot plates: " << x << std::endl;
-        int nr = game_as_bm->count_hot_plates();
-        std::cout << "count: " << nr << std::endl;
+    while (true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+        game->print_state();
+        game->update();
     }
-    std::cout << "nr o hotplates: " << game_as_bm->count_hot_plates() << std::endl;
 
     delete game;
     return 0;

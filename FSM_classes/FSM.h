@@ -16,7 +16,7 @@ protected:
     std::vector<State *> states; // keep track to be able to dealloc
 public:
     // transition conditions
-        // define some state transitions
+    // define some state transitions
 
     virtual ~FSM() {
         delete currState;
@@ -31,6 +31,10 @@ public:
             currState = new_state;
         }
     };
+
+    void print_state() {
+        std::cout << (int) currState->getState() << std::endl;
+    }
 };
 
 

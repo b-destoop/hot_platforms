@@ -6,32 +6,30 @@
 #define HOT_PLATFORMS_BOMBMODE_H
 
 #include <cstdint>
-#include "game.h"
+#include "FSM_classes/FSM.h"
+#include "FSM_classes/State.h"
+#include "settings.h"
 
-class BombMode : public Game {
-    enum BMGameState {
-        init,
-        auto_generate_hot_plates,
-        user_input_add_hot_plates,
-        game_ready,
-        player_plate_down,
-        play_positive_tritone,
-        game_over,
-        game_over_wait_user_input,
-        servo_aim,
-        servo_fire
-    };
+class BombMode : public FSM {
 private:
-    BMGameState state = init;
+    Settings *settings;
 
+    // SWITCH CONDITIONS
+    bool init_to_auto_gen_hotpl();
+
+    bool init_to_user_input_add_hot_plates();
+
+    bool auto_gen_hotpl_to_game_ready();
 
 public:
     uint8_t hotplates = 0b0;
 
-    explicit BombMode(Settings &settings) : Game(settings) {}
+    explicit BombMode(Settings *settings);
 
-    int update() override;
+    ~BombMode() override;
+
     int count_hot_plates();
+
     void gen_hot_plates();
 
 };
