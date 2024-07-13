@@ -5,6 +5,7 @@
 #include "BombMode.h"
 #include <iostream>
 #include <esp_log.h>
+#include <esp_random.h>
 
 #define DEBUG(MSG) std::cout << "BM - " << MSG << std::endl;
 
@@ -26,14 +27,13 @@ unsigned int count_bits(int n) {
     return count;
 }
 
-int BombMode::count_hot_plates() {
+unsigned int BombMode::count_hot_plates() {
     return count_bits(this->hotplates);
 }
 
 /**
  * Generates the hot plates based on the number set int settings.
  * This method assumes 8 players and an 8 bit int based on this amount of players.
- * todo: randomly seed the auto generator: https://en.cppreference.com/w/cpp/numeric/random/rand
  */
 void BombMode::gen_hot_plates() {
     uint8_t new_hp = 0;
@@ -46,7 +46,7 @@ void BombMode::gen_hot_plates() {
         new_hp |= 1;
 
         // shift a random amount
-        new_hp <<= rand() % 7;
+        new_hp <<= esp_random() % 7;
     }
     this->hotplates = new_hp;
 }
@@ -68,9 +68,6 @@ BombMode::BombMode(Settings *settings) : settings(settings) {
     init->addTransition(user_input_add_hot_plates, [this] { return this->init_to_user_input_add_hot_plates(); });
 
     auto_gen_hotpl->addTransition(game_ready, [this] { return this->auto_gen_hotpl_to_game_ready(); });
-    auto_gen_hotpl->setEntryFunction([] {
-        ESP_LOGI(tag_bm, "entered auto_gen_hp state");
-    });
 
 
     states.push_back(init);
@@ -104,10 +101,8 @@ bool BombMode::init_to_user_input_add_hot_plates() {
 }
 
 bool BombMode::auto_gen_hotpl_to_game_ready() {
-    // todo: make this ESP32 compliant
-    std::cout << "ready auto generating? (type 'ready')" << std::endl;
-    std::string x;
-    std::cin >> x;
-    return x == "ready";
+    gen_hot_plates();
+    ESP_LOGI(tag_bm, "amount of generated plates: %d, coordinates: %d", this->count_hot_plates(), this->hotplates);
+    return true;
 }
 

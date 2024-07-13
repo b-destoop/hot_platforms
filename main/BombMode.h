@@ -28,7 +28,7 @@ public:
 
     ~BombMode() override;
 
-    int count_hot_plates();
+    unsigned int count_hot_plates();
 
     void gen_hot_plates();
 
