@@ -7,7 +7,9 @@
 
 #include "IOController.h"
 #include <map>
-#include <curses.h>
+#include <cstdio>
+#include <iostream>
+//#include <curses.h>
 
 class PcIOController : IOController {
 private:
@@ -28,12 +30,12 @@ public:
     }
 
     InPut cin() override {
-        int ch;
-
-        initscr();
-        noecho();
-        cbreak();	/* Line buffering disabled. pass on everything */
-        ch = getch();
+//        int ch;
+//
+//        initscr();
+//        noecho();
+//        cbreak();	/* Line buffering disabled. pass on everything */
+//        ch = getch();
 
 //        switch (ch) {
 //            case

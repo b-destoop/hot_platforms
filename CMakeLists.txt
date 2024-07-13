@@ -1,28 +1,6 @@
-cmake_minimum_required(VERSION 3.27)
-project(hot_platforms)
+# The following five lines of boilerplate have to be in your project's
+# CMakeLists in this exact order for cmake to work correctly
+cmake_minimum_required(VERSION 3.16)
 
-set(CMAKE_CXX_STANDARD 23)
-
-# Find the ncurses package
-find_package(Curses REQUIRED)
-
-# Include ncurses headers
-include_directories(${CURSES_INCLUDE_DIR})
-
-add_executable(hot_platforms main.cpp
-        cmake-build-debug/Game.cpp
-        cmake-build-debug/Game.h
-        IOcontroller/IOController.h
-        IOcontroller/PcIOController.cpp
-        IOcontroller/PcIOController.h
-        BombMode.cpp
-        BombMode.h
-        settings.h
-        FSM_classes/FSM.h
-        FSM_classes/State.h
-        TStateTypes.h
-        FSM_classes/State.cpp
-)
-
-# Link the ncurses library
-target_link_libraries(hot_platforms ${CURSES_LIBRARIES})
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+project(hotplates)

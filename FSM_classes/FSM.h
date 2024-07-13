@@ -7,10 +7,13 @@
 
 #include <iostream>
 #include <vector>
+#include <esp_log.h>
 #include "State.h"
 
 
 class FSM {
+private:
+    const char *tag_fsm = "FSM";
 protected:
     State *currState;
     std::vector<State *> states; // keep track to be able to dealloc
@@ -28,12 +31,14 @@ public:
     void update() {
         State *new_state = currState->update();
         if (new_state != currState) {
+            currState->exitState();
             currState = new_state;
+            currState->enterState();
         }
     };
 
     void print_state() {
-        std::cout << (int) currState->getState() << std::endl;
+        ESP_LOGI(tag_fsm, "current state: %i", static_cast<int>(currState->getState()));
     }
 };
 

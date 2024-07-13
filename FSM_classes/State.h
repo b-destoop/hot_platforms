@@ -6,7 +6,7 @@
 #define FSM_OOP_STATE_H
 
 #include <list>
-#include "../TStateTypes.h"
+#include "TStateTypes.h"
 
 #include "Transition.h"
 
@@ -18,8 +18,27 @@ private:
     FSM *fsm;
     TState state;
     std::list<Transition *> transitions;
+    std::function<void()> entry_function, exit_function, update_function;
 public:
-    explicit State(TState state, FSM *fsm) : fsm(fsm), state(state) {}
+    State(TState state, FSM *fsm);
+
+    /**
+     * Method to call when the state becomes active.
+     * aka "entering" the state
+     */
+    void enterState();
+
+    /**
+     * Method to call when the state becomes inactive.
+     * aka "exiting" the state
+     */
+    void exitState();
+
+    void setEntryFunction(const std::function<void()> &entryFunction);
+
+    void setExitFunction(const std::function<void()> &exitFunction);
+
+    void setUpdateFunction(const std::function<void()> &updateFunction);
 
     void addTransition(State *destination, std::function<bool()> condition);
 

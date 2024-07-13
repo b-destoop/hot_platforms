@@ -4,10 +4,14 @@
 
 #include "BombMode.h"
 #include <iostream>
+#include <esp_log.h>
 
 #define DEBUG(MSG) std::cout << "BM - " << MSG << std::endl;
 
 // ------------------ HELPER FUNCTIONS ------------------
+
+const char *tag_bm = "BOMBMODE";
+
 /**
  * Algorithm can be found here
  * https://www.geeksforgeeks.org/count-set-bits-in-an-integer/
@@ -49,31 +53,24 @@ void BombMode::gen_hot_plates() {
 
 // ------------------ CONSTR/DESTR ------------------
 BombMode::BombMode(Settings *settings) : settings(settings) {
-    auto *init
-            = new State(TState::init, this);
-    auto auto_gen_hotpl
-            = new State(TState::auto_generate_hot_plates, this);
-    auto user_input_add_hot_plates
-            = new State(TState::user_input_add_hot_plates, this);
-    auto game_ready
-            = new State(TState::game_ready, this);
-    auto player_plate_down
-            = new State(TState::player_plate_down, this);
-    auto play_pos_trt
-            = new State(TState::play_positive_tritone, this);
-    auto game_over
-            = new State(TState::game_over, this);
-    auto game_over_wait_user_input
-            = new State(TState::game_over_wait_user_input, this);
-    auto servo_aim
-            = new State(TState::servo_aim, this);
-    auto servo_fire
-            = new State(TState::servo_fire, this);
+    auto *init = new State(TState::init, this);
+    auto auto_gen_hotpl = new State(TState::auto_generate_hot_plates, this);
+    auto user_input_add_hot_plates = new State(TState::user_input_add_hot_plates, this);
+    auto game_ready = new State(TState::game_ready, this);
+    auto player_plate_down = new State(TState::player_plate_down, this);
+    auto play_pos_trt = new State(TState::play_positive_tritone, this);
+    auto game_over = new State(TState::game_over, this);
+    auto game_over_wait_user_input = new State(TState::game_over_wait_user_input, this);
+    auto servo_aim = new State(TState::servo_aim, this);
+    auto servo_fire = new State(TState::servo_fire, this);
 
     init->addTransition(auto_gen_hotpl, [this] { return this->init_to_auto_gen_hotpl(); });
     init->addTransition(user_input_add_hot_plates, [this] { return this->init_to_user_input_add_hot_plates(); });
 
     auto_gen_hotpl->addTransition(game_ready, [this] { return this->auto_gen_hotpl_to_game_ready(); });
+    auto_gen_hotpl->setEntryFunction([] {
+        ESP_LOGI(tag_bm, "entered auto_gen_hp state");
+    });
 
 
     states.push_back(init);
@@ -88,6 +85,7 @@ BombMode::BombMode(Settings *settings) : settings(settings) {
     states.push_back(servo_fire);
 
     currState = init;
+    init->enterState();
 }
 
 BombMode::~BombMode() {
