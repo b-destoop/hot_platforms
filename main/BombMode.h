@@ -8,7 +8,7 @@
 #include "../../../../.espressif/tools/xtensa-esp-elf/esp-13.2.0_20240530/xtensa-esp-elf/xtensa-esp-elf/include/c++/13.2.0/cstdint"
 #include "../FSM_classes/FSM.h"
 #include "../FSM_classes/State.h"
-#include "../settings.h"
+#include "settings.h"
 
 class BombMode : public FSM {
 private:

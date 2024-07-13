@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 #include "../IOcontroller/PcIOController.h"
-#include "../settings.h"
+#include "settings.h"
 #include "BombMode.h"
 
 #include "soc/soc.h"
