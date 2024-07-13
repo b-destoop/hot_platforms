@@ -38,7 +38,40 @@ public:
     };
 
     void print_state() {
-        ESP_LOGI(tag_fsm, "current state: %i", static_cast<int>(currState->getState()));
+        std::string msg = "current state: ";
+        switch (currState->getState()) {
+            case TState::init:
+                msg.append("init");
+                break;
+            case TState::auto_generate_hot_plates:
+                msg.append("auto generate hot plates");
+                break;
+            case TState::user_input_add_hot_plates:
+                msg.append("user input add hot plates");
+                break;
+            case TState::game_ready:
+                msg.append("game ready");
+                break;
+            case TState::player_plate_down:
+                msg.append("player plate down");
+                break;
+            case TState::play_positive_tritone:
+                msg.append("player positive tritone");
+                break;
+            case TState::game_over:
+                msg.append("game over");
+                break;
+            case TState::game_over_wait_user_input:
+                msg.append("game over wait user input");
+                break;
+            case TState::servo_aim:
+                msg.append("servo aim");
+                break;
+            case TState::servo_fire:
+                msg.append("servo fire");
+                break;
+        }
+        ESP_LOGI(tag_fsm, "%s", msg.c_str());
     }
 };
 
