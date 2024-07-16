@@ -12,6 +12,7 @@ enum class TState {
     init,
     auto_generate_hot_plates,
     user_input_add_hot_plates,
+    add_p_to_hot_plates,
     game_ready,
     player_plate_down,
     play_positive_tritone,

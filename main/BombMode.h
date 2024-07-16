@@ -9,10 +9,12 @@
 #include "../FSM_classes/FSM.h"
 #include "../FSM_classes/State.h"
 #include "settings.h"
+#include "../IOcontroller/EspIoController.h"
 
 class BombMode : public FSM {
 private:
     Settings *settings;
+    EspIoController *ioController;
 
     // SWITCH CONDITIONS
     bool init_to_auto_gen_hotpl();
@@ -24,7 +26,7 @@ private:
 public:
     uint8_t hotplates = 0b0;
 
-    explicit BombMode(Settings *settings);
+    explicit BombMode(Settings *settings, EspIoController *ioController);
 
     ~BombMode() override;
 

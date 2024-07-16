@@ -7,6 +7,8 @@
 
 #include "driver/gpio.h"
 
+#include <vector>
+
 #define P1_BUTTON GPIO_NUM_26
 #define P2_BUTTON GPIO_NUM_25
 #define P3_BUTTON GPIO_NUM_34
@@ -18,5 +20,15 @@
 
 #define ACT_BUTTON GPIO_NUM_23
 
+
+static const std::vector<gpio_num_t> buttons =
+        {P1_BUTTON, P2_BUTTON, P3_BUTTON,
+         P4_BUTTON, P5_BUTTON, P6_BUTTON,
+         P7_BUTTON, P8_BUTTON, ACT_BUTTON};
+
+static const std::vector<gpio_num_t> player_buttons =
+        {P1_BUTTON, P2_BUTTON, P3_BUTTON,
+         P4_BUTTON, P5_BUTTON, P6_BUTTON,
+         P7_BUTTON, P8_BUTTON};
 
 #endif //HOTPLATES_PINOUTS_H

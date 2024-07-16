@@ -49,6 +49,9 @@ public:
             case TState::user_input_add_hot_plates:
                 msg.append("user input add hot plates");
                 break;
+            case TState::add_p_to_hot_plates:
+                msg.append("add #p to hot plates");
+                break;
             case TState::game_ready:
                 msg.append("game ready");
                 break;

@@ -7,7 +7,7 @@
 #include <esp_log.h>
 #include <esp_random.h>
 
-#define DEBUG(MSG) std::cout << "BM - " << MSG << std::endl;
+#include "../IOcontroller/EspIoController.h"
 
 // ------------------ HELPER FUNCTIONS ------------------
 
@@ -52,27 +52,57 @@ void BombMode::gen_hot_plates() {
 }
 
 // ------------------ CONSTR/DESTR ------------------
-BombMode::BombMode(Settings *settings) : settings(settings) {
-    auto *init = new State(TState::init, this);
+BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings(settings), ioController{ioController} {
+    auto init = new State(TState::init, this);
     auto auto_gen_hotpl = new State(TState::auto_generate_hot_plates, this);
-    auto user_input_add_hot_plates = new State(TState::user_input_add_hot_plates, this);
+    auto user_input = new State(TState::user_input_add_hot_plates, this);
+    auto add_p_to_hot_plates = new State(TState::add_p_to_hot_plates, this);
+
     auto game_ready = new State(TState::game_ready, this);
     auto player_plate_down = new State(TState::player_plate_down, this);
     auto play_pos_trt = new State(TState::play_positive_tritone, this);
+
     auto game_over = new State(TState::game_over, this);
     auto game_over_wait_user_input = new State(TState::game_over_wait_user_input, this);
     auto servo_aim = new State(TState::servo_aim, this);
     auto servo_fire = new State(TState::servo_fire, this);
 
-    init->addTransition(auto_gen_hotpl, [this] { return this->init_to_auto_gen_hotpl(); });
-    init->addTransition(user_input_add_hot_plates, [this] { return this->init_to_user_input_add_hot_plates(); });
+    init->addTransition(auto_gen_hotpl, [this] {
+        return this->settings->auto_gen_hotplate;
+    });
+    init->addTransition(user_input, [this] {
+        return !this->settings->auto_gen_hotplate;
+    });
 
-    auto_gen_hotpl->addTransition(game_ready, [this] { return this->auto_gen_hotpl_to_game_ready(); });
+    auto_gen_hotpl->addTransition(game_ready, [this] {
+        gen_hot_plates();
+        ESP_LOGI(tag_bm, "amount of generated plates: %d, coordinates: %d", this->count_hot_plates(), this->hotplates);
+        return true;
+    });
+
+    user_input->addTransition(add_p_to_hot_plates, [] {
+
+        return true;
+//        // go to the next state if any player plate is pressed
+//        // https://en.cppreference.com/w/cpp/algorithm/ranges/all_any_none_of
+//        bool result = std::any_of(player_buttons.begin(),
+//                                  player_buttons.end(),
+//                                  [](gpio_num_t i) { return gpio_get_level(i); });
+//        return result;
+    });
+    add_p_to_hot_plates->addTransition(user_input, [] {
+        return true;
+//        // return to the previous state if all plates are back to their normal state
+//        bool result = std::none_of(buttons.begin(),
+//                                   buttons.end(),
+//                                   [](gpio_num_t i) { return gpio_get_level(i); });
+//        return result;
+    });
 
 
     states.push_back(init);
     states.push_back(auto_gen_hotpl);
-    states.push_back(user_input_add_hot_plates);
+    states.push_back(user_input);
     states.push_back(game_ready);
     states.push_back(player_plate_down);
     states.push_back(play_pos_trt);
@@ -92,17 +122,4 @@ BombMode::~BombMode() {
 }
 
 // SWITCH CONDITIONS
-bool BombMode::init_to_auto_gen_hotpl() {
-    return settings->auto_gen_hotplate;
-}
-
-bool BombMode::init_to_user_input_add_hot_plates() {
-    return !settings->auto_gen_hotplate;
-}
-
-bool BombMode::auto_gen_hotpl_to_game_ready() {
-    gen_hot_plates();
-    ESP_LOGI(tag_bm, "amount of generated plates: %d, coordinates: %d", this->count_hot_plates(), this->hotplates);
-    return true;
-}
 
