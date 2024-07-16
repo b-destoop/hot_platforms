@@ -5,12 +5,18 @@
 #ifndef HOTPLATES_ESPIOCONTROLLER_H
 #define HOTPLATES_ESPIOCONTROLLER_H
 
-
 #include <cstdint>
+
+typedef uint16_t io_state;
 
 class EspIoController {
 private:
-    uint8_t prev_player_state = 0;
+    /**
+     * bit: |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
+     * btn: |  |  |  |  |  |  |  |at|p8|p7|p6|p5|p4|p3|p2|p1|
+     */
+    io_state buttons_curr = 0, buttons_last = 0; // represent the players from right to left
+
 public:
     /**
      * Configure all the pins of the microcontroller
