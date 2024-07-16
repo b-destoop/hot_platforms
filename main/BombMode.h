@@ -17,11 +17,6 @@ private:
     EspIoController *ioController;
 
     // SWITCH CONDITIONS
-    bool init_to_auto_gen_hotpl();
-
-    bool init_to_user_input_add_hot_plates();
-
-    bool auto_gen_hotpl_to_game_ready();
 
 public:
     uint8_t hotplates = 0b0;

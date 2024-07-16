@@ -28,13 +28,19 @@ public:
         }
     }
 
-    void update() {
+    /**
+     * Update the FSM game loop
+     * @return true if the fsm state has changed
+     */
+    bool update() {
         State *new_state = currState->update();
         if (new_state != currState) {
             currState->exitState();
             currState = new_state;
             currState->enterState();
+            return true;
         }
+        return false;
     };
 
     void print_state() {
