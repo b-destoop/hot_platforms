@@ -13,6 +13,7 @@ const char *tag_s = "STATE";
 State::State(TState state, FSM *fsm) : fsm(fsm), state(state) {}
 
 void State::addTransition(State *destination, std::function<bool()> condition) {
+    // todo: check if transition from source to does not already exist in the transitions list
     auto *t = new Transition{this, destination, this->fsm, std::move(condition)};
     transitions.push_back(t);
 }
