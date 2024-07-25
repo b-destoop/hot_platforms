@@ -19,7 +19,7 @@ private:
     // SWITCH CONDITIONS
 
 public:
-    uint8_t hotplates = 0b0;
+    pltfrm_state hotplates = 0b0;
 
     explicit BombMode(Settings *settings, EspIoController *ioController);
 
