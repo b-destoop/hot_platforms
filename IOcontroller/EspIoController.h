@@ -8,14 +8,24 @@
 #include <cstdint>
 
 typedef uint16_t io_state;
+typedef uint8_t btns_state;
 
 class EspIoController {
 private:
     /**
+     * bit mapping of buttons:
      * bit: |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
      * btn: |  |  |  |  |  |  |  |at|p8|p7|p6|p5|p4|p3|p2|p1|
      */
-    io_state buttons_curr = 0, buttons_last = 0; // represent the players from right to left
+    io_state io_curr = 0, io_last = 0; // represent the players from right to left
+
+    /**
+     * returns the buttons part of an ioState.
+     * ==> just the 8 least significant bits of an io_state, so just cast from io_state to btns_state
+     * @param ioState
+     * @return
+     */
+    static btns_state get_btns_state(io_state ioState);
 
 public:
     /**
@@ -29,10 +39,12 @@ public:
     void update();
 
     /**
-     * Returns the buttons that were pressed at the last update() loop
+     * Returns the buttons (plates) that changed state from not pressed to pressed at the last update() loop.
      * @return 8 bits showing which player platforms were registered to have been pressed
      */
-    uint8_t get_buttons();
+    btns_state get_button_downs();
+
+
 };
 
 

@@ -11,7 +11,7 @@
 
 #include "pinouts.h"
 
-const char* tag_io = "IO CTRL";
+const char *tag_io = "IO CTRL";
 
 EspIoController::EspIoController() {
     for (gpio_num_t button: buttons) {
@@ -21,27 +21,29 @@ EspIoController::EspIoController() {
 }
 
 void EspIoController::update() {
-    this->buttons_last = this->buttons_curr;
+    this->io_last = this->io_curr;
 
-    this->buttons_curr = 0;
+    this->io_curr = 0;
     for (int i = 0; i < buttons.size(); i++) {
         uint16_t level = gpio_get_level(buttons[i]);
-        this->buttons_curr |= (level << i);
+        this->io_curr |= (level << i);
     }
-
-    ESP_LOGI(tag_io, "buttons curr: %d", this->buttons_curr);
 }
 
-uint8_t EspIoController::get_buttons() {
-    // get all the player ports
-
-    // compare the ports to the previously known version of the ports
-
-    // store the difference between the current and previous state if needed
-
-    // save the current ports as the prev state
-
-    // return the difference
-    return 0;
+btns_state EspIoController::get_button_downs() {
+    /**
+     * last btns =  0000    0010    0010
+     * curr btns =  0010    0000    0100
+     * result =     0010    0000    0100
+     *
+     * algorithm: (NOT(last buttons)) AND (curr buttons)
+     */
+    btns_state last_buttons = get_btns_state(this->io_last);
+    btns_state curr_buttons = get_btns_state(this->io_curr);
+    btns_state buttons_down = (~last_buttons) & curr_buttons;
+    return buttons_down;
 }
 
+btns_state EspIoController::get_btns_state(io_state ioState) {
+    return (btns_state) ioState;
+}

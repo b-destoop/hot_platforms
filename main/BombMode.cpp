@@ -70,6 +70,7 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     init->addTransition(auto_gen_hotpl, [this] {
         return this->settings->auto_gen_hotplate;
     });
+
     init->addTransition(user_input, [this] {
         return !this->settings->auto_gen_hotplate;
     });
@@ -80,23 +81,23 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
         return true;
     });
 
-    user_input->addTransition(add_p_to_hot_plates, [] {
-
-        return true;
-//        // go to the next state if any player plate is pressed
-//        // https://en.cppreference.com/w/cpp/algorithm/ranges/all_any_none_of
-//        bool result = std::any_of(player_buttons.begin(),
-//                                  player_buttons.end(),
-//                                  [](gpio_num_t i) { return gpio_get_level(i); });
-//        return result;
+    user_input->addTransition(add_p_to_hot_plates, [this] {
+        btns_state buttons = this->ioController->get_button_downs();
+        if (buttons) {
+            ESP_LOGI(tag_bm, "some buttons were pressed %u", buttons);
+            return true;
+        }
+        return false;
     });
+    add_p_to_hot_plates->setEntryFunction([this] {
+        // xor works like switch
+        this->hotplates = this->hotplates ^ this->ioController->get_button_downs();
+        ESP_LOGI(tag_bm, "hot plates: %u", this->hotplates);
+    });
+
     add_p_to_hot_plates->addTransition(user_input, [] {
+        // immediately return to the user_input state, hotplates are updated on state entry
         return true;
-//        // return to the previous state if all plates are back to their normal state
-//        bool result = std::none_of(buttons.begin(),
-//                                   buttons.end(),
-//                                   [](gpio_num_t i) { return gpio_get_level(i); });
-//        return result;
     });
 
 
