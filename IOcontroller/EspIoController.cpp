@@ -30,7 +30,8 @@ void EspIoController::update() {
     }
 }
 
-btns_state EspIoController::get_button_downs() {
+
+io_state EspIoController::get_io_downs() {
     /**
      * last btns =  0000    0010    0010
      * curr btns =  0010    0000    0100
@@ -38,12 +39,21 @@ btns_state EspIoController::get_button_downs() {
      *
      * algorithm: (NOT(last buttons)) AND (curr buttons)
      */
-    btns_state last_buttons = get_btns_state(this->io_last);
-    btns_state curr_buttons = get_btns_state(this->io_curr);
-    btns_state buttons_down = (~last_buttons) & curr_buttons;
-    return buttons_down;
+    io_state io_down = (~this->io_last) & this->io_curr;
+    return io_down;
+}
+
+
+btns_state EspIoController::get_button_downs() {
+    // take the least significant bits of io_state --> these contain the platforms
+    return (btns_state) this->get_io_downs();
 }
 
 btns_state EspIoController::get_btns_state(io_state ioState) {
     return (btns_state) ioState;
+}
+
+bool EspIoController::get_activate_down() {
+    io_state downs = get_io_downs();
+    return downs >> 8;
 }

@@ -84,7 +84,7 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     user_input->addTransition(add_p_to_hot_plates, [this] {
         btns_state buttons = this->ioController->get_button_downs();
         if (buttons) {
-            ESP_LOGI(tag_bm, "some buttons were pressed %u", buttons);
+            ESP_LOGI(tag_bm, "buttons were pressed %u", buttons);
             return true;
         }
         return false;
@@ -98,6 +98,14 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     add_p_to_hot_plates->addTransition(user_input, [] {
         // immediately return to the user_input state, hotplates are updated on state entry
         return true;
+    });
+
+    user_input->addTransition(game_ready, [this]{
+        bool foo = this->ioController->get_activate_down();
+        if(foo){
+            ESP_LOGI(tag_bm, "activate pressed");
+        }
+        return foo;
     });
 
 

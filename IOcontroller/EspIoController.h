@@ -39,12 +39,22 @@ public:
     void update();
 
     /**
+     * returns the gpio inputs that changed state from not on to on at the last update() loop.
+     * @return sizeof(io_state) bits that show which states came on
+     */
+    io_state get_io_downs();
+
+    /**
      * Returns the buttons (plates) that changed state from not pressed to pressed at the last update() loop.
      * @return 8 bits showing which player platforms were registered to have been pressed
      */
     btns_state get_button_downs();
 
-
+    /**
+     * Checks if the activate button was pressed.
+     * @return true if the button was pressed, false in the other case
+     */
+    bool get_activate_down();
 };
 
 
