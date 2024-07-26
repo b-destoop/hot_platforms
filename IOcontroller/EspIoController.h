@@ -72,6 +72,8 @@ public:
      * play a positive tritone on the speaker. Meant as a reward
      */
     void play_pos_tritone();
+
+    void play_buzzer();
 };
 
 

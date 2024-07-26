@@ -82,3 +82,8 @@ void EspIoController::play_pos_tritone() {
     ESP_LOGI(tag_io, "~positive tritone plays~");
 }
 
+void EspIoController::play_buzzer() {
+    // todo: make speaker work
+    ESP_LOGI(tag_io, "~buzzer plays~");
+}
+

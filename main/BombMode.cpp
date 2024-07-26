@@ -63,6 +63,7 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     auto platform_up_cold = new State(TState::plyr_plate_up_cold, this);
     auto platform_up_hot = new State(TState::plyr_plate_up_hot, this);
     auto play_pos_trt = new State(TState::play_positive_tritone, this);
+    auto play_buzzer = new State(TState::play_buzzer, this);
 
     auto game_over = new State(TState::game_over, this);
     auto game_over_wait_user_input = new State(TState::game_over_wait_user_input, this);
@@ -150,7 +151,36 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     });
 
     play_pos_trt->addTransition(game_ready, [] {
+        // tone is played on entry. Go to next state after 1 update.
         return true;
+    });
+
+    platform_up_hot->addTransition(play_buzzer, [this]{
+       return this->settings->buzzer_sound;
+    });
+    play_buzzer->setEntryFunction([this]{
+       this->ioController->play_buzzer();
+    });
+
+    platform_up_hot->addTransition(game_over, [this]{
+       return !this->settings->buzzer_sound;
+    });
+
+    play_buzzer->addTransition(game_over, [this]{
+        // buzzer played on entry. Go to next state after 1 update.
+        return true;
+    });
+
+    game_over->addTransition(game_over_wait_user_input, [this]{
+       return this->settings->trigger_for_fire;
+    });
+
+    game_over->addTransition(servo_aim, [this]{
+        return !this->settings->trigger_for_fire;
+    });
+
+    game_over_wait_user_input->addTransition(servo_aim, [this]{
+       return this->ioController->get_activate_down();
     });
 
 
