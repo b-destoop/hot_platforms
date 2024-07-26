@@ -73,6 +73,9 @@ public:
      */
     void play_pos_tritone();
 
+    /**
+     * play buzzer sound on the speaker. Meant a punishment
+     */
     void play_buzzer();
 };
 
