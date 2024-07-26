@@ -19,6 +19,8 @@ private:
      */
     io_state io_curr = 0, io_last = 0; // represent the players from right to left
 
+    bool servo_aimed = false, servo_fired = false;
+
     /**
      * returns the buttons part of an ioState.
      * ==> just the 8 least significant bits of an io_state, so just cast from io_state to btns_state
@@ -77,6 +79,29 @@ public:
      * play buzzer sound on the speaker. Meant a punishment
      */
     void play_buzzer();
+
+    /**
+     * aim the servo at the desired player.
+     * @param player -> selection of player by bit
+     */
+    void servo_aim(pltfrm_state player);
+
+    /**
+     * Check if the servo is done aiming.
+     * @return true if ready to fire.
+     */
+    bool isServoAimed();
+
+    /**
+     * Fire the servo independently if servo is aimed.
+     */
+    void servo_fire();
+
+    /**
+     * Check if the servo is done firing.
+     * @return true if done firing.
+     */
+    bool isServoFired();
 };
 
 

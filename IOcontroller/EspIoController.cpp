@@ -87,3 +87,29 @@ void EspIoController::play_buzzer() {
     ESP_LOGI(tag_io, "~buzzer plays~");
 }
 
+void EspIoController::servo_aim(pltfrm_state player) {
+    // todo: implement servo aim. Make this->servo_aimed thread safe
+    ESP_LOGI(tag_io, "aiming servo");
+    this->servo_aimed = true;
+}
+
+bool EspIoController::isServoAimed() {
+    bool aimed = this->servo_aimed;
+    if (aimed) this->servo_aimed = false;
+    return aimed;
+}
+
+void EspIoController::servo_fire() {
+    // todo: implement servo fire
+    ESP_LOGI(tag_io, "firing servo");
+    this->servo_fired = true;
+}
+
+bool EspIoController::isServoFired() {
+    bool fired = this->servo_fired;
+    if (fired) this->servo_fired = false;
+    return fired;
+}
+
+
+

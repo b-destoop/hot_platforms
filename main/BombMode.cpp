@@ -181,6 +181,21 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     game_over_wait_user_input->addTransition(servo_aim, [this] {
         return this->ioController->get_activate_down();
     });
+    servo_aim->setEntryFunction([this] {
+        pltfrm_state target = this->ioController->get_platform_ups();
+        this->ioController->servo_aim(target);
+    });
+
+    servo_aim->addTransition(servo_fire, [this]{
+       return this->ioController->isServoAimed();
+    });
+    servo_fire->setEntryFunction([this]{
+       this->ioController->servo_fire();
+    });
+
+    servo_fire->addTransition(init, [this]{
+       return this->ioController->isServoFired();
+    });
 
 
     states.push_back(init);
