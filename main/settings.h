@@ -22,7 +22,7 @@ public:
     // bomb mode
     bool trigger_for_fire = true;
     bool auto_gen_hotplate = true;
-    int auto_gen_amount = 2;
+    int auto_gen_amount = 1;
 
     // rhythm settings
     bool auto_rhythm = true;

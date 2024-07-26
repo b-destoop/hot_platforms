@@ -8,7 +8,7 @@
 #include <cstdint>
 
 typedef uint16_t io_state;
-typedef uint8_t btns_state;
+typedef uint8_t pltfrm_state;
 
 class EspIoController {
 private:
@@ -25,7 +25,7 @@ private:
      * @param ioState
      * @return
      */
-    static btns_state get_btns_state(io_state ioState);
+    static pltfrm_state get_btns_state(io_state ioState);
 
 public:
     /**
@@ -45,16 +45,33 @@ public:
     io_state get_io_downs();
 
     /**
+     * returns the gpio inputs that changed state from on to not on at the last update() loop.
+     * @return sizeof(io_state) bits that show which states went off
+     */
+    io_state get_io_ups();
+
+    /**
      * Returns the buttons (plates) that changed state from not pressed to pressed at the last update() loop.
      * @return 8 bits showing which player platforms were registered to have been pressed
      */
-    btns_state get_button_downs();
+    pltfrm_state get_platform_downs();
+
+    /**
+     * Returns the buttons (plates) that changed state from pressed to not pressed at the last update() loop.
+     * @return 8 bits showing which player platforms were registered to have been released
+     */
+    pltfrm_state get_platform_ups();
 
     /**
      * Checks if the activate button was pressed.
      * @return true if the button was pressed, false in the other case
      */
     bool get_activate_down();
+
+    /**
+     * play a positive tritone on the speaker. Meant as a reward
+     */
+    void play_pos_tritone();
 };
 
 

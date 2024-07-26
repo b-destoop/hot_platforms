@@ -15,11 +15,13 @@ enum class TState {
     add_p_to_hot_plates,
     game_ready,
     player_plate_down,
+    plyr_plate_up_cold,
+    plyr_plate_up_hot,
     play_positive_tritone,
     game_over,
     game_over_wait_user_input,
     servo_aim,
-    servo_fire
+    servo_fire,
 };
 
 #endif //HOT_PLATFORMS_TSTATETYPES_H

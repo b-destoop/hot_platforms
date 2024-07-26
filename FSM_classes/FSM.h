@@ -64,6 +64,12 @@ public:
             case TState::player_plate_down:
                 msg.append("player plate down");
                 break;
+            case TState::plyr_plate_up_cold:
+                msg.append("plyr plate up cold");
+                break;
+            case TState::plyr_plate_up_hot:
+                msg.append("plyr plate up hot");
+                break;
             case TState::play_positive_tritone:
                 msg.append("player positive tritone");
                 break;

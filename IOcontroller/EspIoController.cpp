@@ -39,21 +39,46 @@ io_state EspIoController::get_io_downs() {
      *
      * algorithm: (NOT(last buttons)) AND (curr buttons)
      */
-    io_state io_down = (~this->io_last) & this->io_curr;
+    io_state io_down = (~this->io_last) & (this->io_curr);
     return io_down;
 }
 
-
-btns_state EspIoController::get_button_downs() {
-    // take the least significant bits of io_state --> these contain the platforms
-    return (btns_state) this->get_io_downs();
+io_state EspIoController::get_io_ups() {
+    /**
+     * last btns =  0010    0110    0001
+     * curr btns =  0000    0100    0101
+     * result =     0010    0010    0000
+     *
+     * algorithm = (last buttons) AND (NOT(curr buttons))
+     */
+    io_state io_up = (this->io_last) & (~this->io_curr);
+    return io_up;
 }
 
-btns_state EspIoController::get_btns_state(io_state ioState) {
-    return (btns_state) ioState;
+
+pltfrm_state EspIoController::get_platform_downs() {
+    // take the least significant bits of io_state --> these contain the platforms
+    pltfrm_state downs = this->get_io_downs();
+    return downs;
+}
+
+pltfrm_state EspIoController::get_platform_ups() {
+    // take the least significant bits of io_state --> these contain the platforms
+    pltfrm_state ups = this->get_io_ups();
+    return ups;
+}
+
+pltfrm_state EspIoController::get_btns_state(io_state ioState) {
+    return (pltfrm_state) ioState;
 }
 
 bool EspIoController::get_activate_down() {
     io_state downs = get_io_downs();
     return downs >> 8;
 }
+
+void EspIoController::play_pos_tritone() {
+    // todo: make speaker work
+    ESP_LOGI(tag_io, "~positive tritone plays~");
+}
+

@@ -60,6 +60,8 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
 
     auto game_ready = new State(TState::game_ready, this);
     auto player_plate_down = new State(TState::player_plate_down, this);
+    auto platform_up_cold = new State(TState::plyr_plate_up_cold, this);
+    auto platform_up_hot = new State(TState::plyr_plate_up_hot, this);
     auto play_pos_trt = new State(TState::play_positive_tritone, this);
 
     auto game_over = new State(TState::game_over, this);
@@ -82,7 +84,7 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     });
 
     user_input->addTransition(add_p_to_hot_plates, [this] {
-        btns_state buttons = this->ioController->get_button_downs();
+        pltfrm_state buttons = this->ioController->get_platform_downs();
         if (buttons) {
             ESP_LOGI(tag_bm, "buttons were pressed %u", buttons);
             return true;
@@ -91,7 +93,7 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
     });
     add_p_to_hot_plates->setEntryFunction([this] {
         // xor works like switch
-        this->hotplates = this->hotplates ^ this->ioController->get_button_downs();
+        this->hotplates = this->hotplates ^ this->ioController->get_platform_downs();
         ESP_LOGI(tag_bm, "hot plates: %u", this->hotplates);
     });
 
@@ -100,12 +102,55 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
         return true;
     });
 
-    user_input->addTransition(game_ready, [this]{
+    user_input->addTransition(game_ready, [this] {
         bool foo = this->ioController->get_activate_down();
-        if(foo){
+        if (foo) {
             ESP_LOGI(tag_bm, "activate pressed");
         }
         return foo;
+    });
+
+    game_ready->addTransition(player_plate_down, [this] {
+        pltfrm_state downs = this->ioController->get_platform_downs();
+        if (downs) ESP_LOGI(tag_bm, "platform downs: %u", downs);
+        return downs;
+    });
+
+    player_plate_down->addTransition(platform_up_cold, [this] {
+        // check for ups
+        pltfrm_state ups = this->ioController->get_platform_ups();
+        if (ups) ESP_LOGI(tag_bm, "platform ups: %u", ups);
+
+        // check that the ups are cold
+        return ups & ~this->hotplates;
+    });
+
+    player_plate_down->addTransition(platform_up_hot, [this] {
+        // check for ups
+        pltfrm_state ups = this->ioController->get_platform_ups();
+        if (ups) ESP_LOGI(tag_bm, "platform ups: %u", ups);
+
+        // check that the ups are hot
+        return ups & this->hotplates;
+    });
+
+    platform_up_cold->addTransition(game_ready, [this] {
+        /* note: this implementation of an FSM makes this boolean check happen
+         * twice instead of once with different outcomes depending on the result
+         * --> not super-duper efficient */
+        return !this->settings->buzzer_sound;
+    });
+
+    platform_up_cold->addTransition(play_pos_trt, [this] {
+        return this->settings->buzzer_sound;
+    });
+
+    play_pos_trt->setEntryFunction([this] {
+        this->ioController->play_pos_tritone();
+    });
+
+    play_pos_trt->addTransition(game_ready, [] {
+        return true;
     });
 
 
