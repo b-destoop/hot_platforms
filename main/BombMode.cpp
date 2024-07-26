@@ -155,32 +155,31 @@ BombMode::BombMode(Settings *settings, EspIoController *ioController) : settings
         return true;
     });
 
-    platform_up_hot->addTransition(play_buzzer, [this]{
-       return this->settings->buzzer_sound;
+    platform_up_hot->addTransition(play_buzzer, [this] {
+        return this->settings->buzzer_sound;
     });
-    play_buzzer->setEntryFunction([this]{
-       this->ioController->play_buzzer();
-    });
-
-    platform_up_hot->addTransition(game_over, [this]{
-       return !this->settings->buzzer_sound;
+    play_buzzer->setEntryFunction([this] {
+        this->ioController->play_buzzer();
     });
 
-    play_buzzer->addTransition(game_over, [this]{
+    platform_up_hot->addTransition(game_over, [this] {
+        return !this->settings->buzzer_sound;
+    });
+
+    play_buzzer->addTransition(game_over, [this] {
         // buzzer played on entry. Go to next state after 1 update.
         return true;
     });
 
-    game_over->addTransition(game_over_wait_user_input, [this]{
-       return this->settings->trigger_for_fire;
+    game_over->addTransition(game_over_wait_user_input, [this] {
+        return this->settings->trigger_for_fire;
     });
 
-    game_over->addTransition(servo_aim, [this]{
+    game_over->addTransition(servo_aim, [this] {
         return !this->settings->trigger_for_fire;
     });
-
-    game_over_wait_user_input->addTransition(servo_aim, [this]{
-       return this->ioController->get_activate_down();
+    game_over_wait_user_input->addTransition(servo_aim, [this] {
+        return this->ioController->get_activate_down();
     });
 
 
