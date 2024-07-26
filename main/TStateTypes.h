@@ -18,6 +18,7 @@ enum class TState {
     plyr_plate_up_cold,
     plyr_plate_up_hot,
     play_positive_tritone,
+    play_buzzer,
     game_over,
     game_over_wait_user_input,
     servo_aim,

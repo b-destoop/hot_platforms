@@ -71,7 +71,10 @@ public:
                 msg.append("plyr plate up hot");
                 break;
             case TState::play_positive_tritone:
-                msg.append("player positive tritone");
+                msg.append("play positive tritone");
+                break;
+            case TState::play_buzzer:
+                msg.append("play buzzer");
                 break;
             case TState::game_over:
                 msg.append("game over");
