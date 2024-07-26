@@ -20,7 +20,7 @@ extern "C" void app_main(void) {
 //    settings.auto_gen_hotplate = false;
 
     while (true) {
-        vTaskDelay(10);
+        vTaskDelay(5);
 
         ioController->update();
 
